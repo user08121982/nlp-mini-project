@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NER with Flask</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Named Entity Recognition</h1>
+        <form id="nerForm">
+            <label for="text">Enter Text:</label>
+            <textarea id="text" name="text" placeholder="Type or paste your text here..."></textarea>
+            <button type="submit">Analyze</button>
+        </form>
+
+        <div id="results">
+            <h2>Entities Found:</h2>
+            <ul id="entities"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Handle the form submission using jQuery
+        $('#nerForm').submit(function (e) {
+            e.preventDefault();
+
+            // Clear previous results
+            $('#entities').empty();
+
+            var text = $('#text').val();
+
+            $.post('/analyze', { text: text }, function (response) {
+                var entities = response.entities;
+
+                if (entities.length === 0) {
+                    $('#entities').append('<li>No named entities found.</li>');
+                } else {
+                    entities.forEach(function (entity) {
+                        $('#entities').append('<li>' + entity.text + ' - ' + entity.label + ' (' + entity.explanation + ')</li>');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
